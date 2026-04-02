@@ -97,11 +97,11 @@ func (a *AcexPlugin) Gather(acc telegraf.Accumulator) error {
 		go func() {
 			defer wg.Done()
 
-			a.Log.Debugf("Fetching metrics for Node ID: %d", ni.ID)
+			a.Log.Debugf("Fetching metrics for node instance: %d", ni.ID)
 
 			err := a.gatherComplianceMetrics(ni, acc, ts)
 			if err != nil {
-				a.Log.Error(fmt.Sprintf("Error fetching metrics for node %d: %v", ni.ID, err))
+				a.Log.Error(fmt.Sprintf("Error fetching metrics for node instance %d: %v", ni.ID, err))
 			}
 		}()
 	}
