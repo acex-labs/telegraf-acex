@@ -14,7 +14,11 @@ type NodeInstance struct {
 	Site          string `json:"site"`
 }
 
-func (a *AcexPlugin) getNodeInstances() ([]NodeInstance, error) {
+type NodeInstancesResponse struct {
+	Items []NodeInstance `json:"items"`
+}
+
+func (a *AcexPlugin) getNodeInstances() (*NodeInstancesResponse, error) {
 
 	req, err := http.NewRequest("GET", fmt.Sprintf("%s/api/v1/inventory/node_instances/", a.URL), nil)
 	if err != nil {
@@ -22,10 +26,10 @@ func (a *AcexPlugin) getNodeInstances() ([]NodeInstance, error) {
 	}
 	req.Header.Set("Content-Type", "application/json; charset=utf-8")
 
-	var res []NodeInstance
+	var res NodeInstancesResponse
 	if err := a.sendRequest(req, &res); err != nil {
 		return nil, err
 	}
 
-	return res, nil
+	return &res, nil
 }

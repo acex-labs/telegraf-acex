@@ -3,7 +3,6 @@ package acex
 import (
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"sync"
 	"time"
@@ -84,24 +83,25 @@ func (a *AcexPlugin) Init() error {
 func (a *AcexPlugin) Gather(acc telegraf.Accumulator) error {
 	nodeInstances, err := a.getNodeInstances()
 	if err != nil {
+		a.Log.Errorf("error fetching node instances: %v", err)
 		return err
 	}
 
 	ts := time.Now()
 	var wg sync.WaitGroup
 
-	for _, nodeInstance := range nodeInstances {
+	for _, nodeInstance := range nodeInstances.Items {
 		ni := nodeInstance
 
 		wg.Add(1)
 		go func() {
 			defer wg.Done()
 
-			a.Log.Debugf("Fetching metrics for node instance: %d", ni.ID)
+			a.Log.Debugf("fetching metrics for node id: %d", ni.ID)
 
 			err := a.gatherComplianceMetrics(ni, acc, ts)
 			if err != nil {
-				a.Log.Error(fmt.Sprintf("Error fetching metrics for node instance %d: %v", ni.ID, err))
+				a.Log.Errorf("error fetching metrics for node %d: %v", ni.ID, err)
 			}
 		}()
 	}
